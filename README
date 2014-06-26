@@ -1,0 +1,21 @@
+This script can pull ntlmssp hashes with the challenge/response from a pcap.
+Requires scapy
+
+It's pretty slow, and I'm not entirely sure if it gets the correct server challenge yet. (update: i've successfully cracked hashes from this script, implying it has all that is necessary)
+UPDATE: I got a 350% speedup on a 1700 packet file when using pypy
+It's also terribly written, all my type checking and return checking is in all the 
+wrong places. Essentially it's a dirty hack that *should* get the job done
+
+My old method, seen here (http://psychomari0.wordpress.com/2012/04/04/pcaptontlmssp/) 
+doesn't seem to work becuase the username is unicode and the -z to show the username is null terminated
+
+USAGE:
+python ntlmssp.py <outfile.pcap>
+
+!!IMPORTANT!!
+You MUST run:
+    tshark -r <file>.pcap 'ntlmssp.ntlmserverchallenge or ntlmssp.ntlmclientchallenge' -w <outfile.pcap>
+before running this program, or it will take ages.
+
+Becuase scapy doesn't have a state machine, like tcp.stream in wireshark/tshark, my method for finding the
+server/client pair is kind of botched. I basically flip source and dest ip and ports and take the first packet
