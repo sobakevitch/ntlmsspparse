@@ -1,3 +1,5 @@
+print "You probably want rewrite.py, not this file"
+import sys;sys.exit()
 import logging
 logging.getLogger("scapy.runtime").setLevel(logging.ERROR)
 from scapy.all import *
