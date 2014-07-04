@@ -1,4 +1,12 @@
 This script can pull ntlmssp hashes with the challenge/response from a pcap.
+
+Supports:
+    - NTLMv1 (LM:NT hash)
+    - NTLMv2 (Just NT)
+    - HTTP Auth
+    - Proxy Auth
+    
+
 Requires scapy
 
 USAGE:
