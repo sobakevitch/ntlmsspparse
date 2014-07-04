@@ -13,5 +13,8 @@ USAGE:
 python rewrite.py <file.pcap>
 
 tshark is no longer required after the rewrite, although
-running `tshark -r in.pcap 'ntlmssp' -F libpcap -w out.pcap``
+running 
+
+tshark -r in.pcap 'ntlmssp' -F libpcap -w out.pcap
+
 might speed up for massive pcaps
