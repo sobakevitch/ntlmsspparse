@@ -58,7 +58,7 @@ for challenge, response in pairs:
     nthash = binascii.b2a_hex(response[ntoff:ntoff+ntlen])
     domain = response[domoff:domoff+domlen].replace("\0", "")
     user = response[useroff:useroff+userlen].replace("\0", "")
-    if nthash == 24: #NTLM
+    if ntlen == 24: #NTLM
         print user+"::"+domain+":"+lmhash+":"+nthash+":"+serverchallenge
     else: #NTLMv2
         print user+"::"+domain+":"+serverchallenge+":"+nthash[:32]+":"+nthash[32:]
