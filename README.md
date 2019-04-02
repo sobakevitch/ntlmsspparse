@@ -1,26 +1,35 @@
-This script can pull ntlmssp hashes with the challenge/response from a pcap.
+# NTLMSSPPARSE
+
+This script can pull `ntlmssp` hashes with the challenge/response from a pcap.
 
 Supports:
-    - NTLMv1 (LM:NT hash)
-    - NTLMv2 (Just NT)
-    - HTTP Auth
-    - Proxy Auth
-    
+* NTLMv1 (LM:NT hash)
+* NTLMv2 (Just NT)
+* HTTP Auth
+* Proxy Auth
+* NTLMSSP Auth (added by this fork).
+
 
 Requires scapy
 
-USAGE:
-python rewrite.py <file.pcap>
+## Usage
 
-tshark is no longer required after the rewrite, although
+```
+python ntlmssparse.py <file.pcap>
+```
+
+`tshark` is no longer required after the ntlmssparse, although
 running 
 
+```
 tshark -r in.pcap 'ntlmssp' -F libpcap -w out.pcap
+```
 
 might speed up for massive pcaps
 
 
-License:
+## License
+```
 The MIT License (MIT)
 
 Copyright (c) 2014 PsychoMario
@@ -42,3 +51,4 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+```
