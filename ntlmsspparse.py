@@ -28,6 +28,8 @@ REGEXP = (
 	"Authorization: NTLM",  # HTTP NTLMSSP_AUTH
 	"Proxy-Authenticate: Negotiate",  # Proxy NTLMSSP_CHALLENGE
 	"Proxy-Authorization: Negotiate",  # Proxy NTLMSSP_AUTH
+	"Proxy-Authenticate: NTLM",  # Proxy NTLMSSP_CHALLENGE
+	"Proxy-Authorization: NTLM",  # Proxy NTLMSSP_AUTH
 	"NTLMSSP"
 )
 
@@ -46,7 +48,7 @@ def store(i):
 
 # see references[0]
 
-svrchallenge = {}
+srvchallenge = {}
 pairs = []
 
 for packet in packets:  # Frankenstein's state machine and TCP reassembly
@@ -58,18 +60,20 @@ for packet in packets:  # Frankenstein's state machine and TCP reassembly
 		typ = unpack("<I", raw[idx:idx + 4])[0]
 		if typ == 2:  # Type 2: Server challenge
 			idx += 16
-			srvchallenge = raw[idx: idx + 8]
+			srvchallenge[packet["TCP"].ack] = raw[idx: idx + 8]
 		elif typ == 3:  # Type 3: Client Auth
 			response = raw[raw.find("NTLMSSP"):]
-			pairs.append(("NTLMSSP", srvchallenge, response))
+			pairs.append(("NTLMSSP", srvchallenge[packet["TCP"].seq], response))
 	else:
-		if ntlmsspheader.startswith("WWW-Authenticate: NTLM ") or ntlmsspheader.startswith("Proxy-Authenticate: Negotiate"):  # Type 2: Server challenge
+		# Type 2: Server challenge
+		if any([ntlmsspheader.startswith("WWW-Authenticate: NTLM "), ntlmsspheader.startswith("Proxy-Authenticate: Negotiate"), ntlmsspheader.startswith("Proxy-Authenticate: NTLM")]):
 			packets = acks[packet["TCP"].ack]
-			svrchallenge[packet["TCP"].ack] = ''.join(packets)
-		if ntlmsspheader.startswith("Authorization: NTLM ") or ntlmsspheader.startswith("Proxy-Authorization: Negotiate"):  # Type 3: Client Auth
-			if svrchallenge.has_key(packet["TCP"].seq):
+			srvchallenge[packet["TCP"].ack] = ''.join(packets)
+		# Type 3: Client Auth
+		if any([ntlmsspheader.startswith("Authorization: NTLM "), ntlmsspheader.startswith("Proxy-Authorization: Negotiate"), ntlmsspheader.startswith("Proxy-Authorization: NTLM")]):
+			if srvchallenge.has_key(packet["TCP"].seq):
 				packets = acks[packet["TCP"].ack]
-				pairs.append(("HTTPNTLMSSP", svrchallenge[packet["TCP"].seq], ''.join(packets)))
+				pairs.append(("HTTPNTLMSSP", srvchallenge[packet["TCP"].seq], ''.join(packets)))
 
 for typ, challenge, response in pairs:
 	if typ == "HTTPNTLMSSP":
